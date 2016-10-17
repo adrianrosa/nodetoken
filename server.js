@@ -6,8 +6,8 @@ var mongoose    = require('mongoose');
 
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config = require('./config'); // get our config file
-var User = require('./app/models/user'); // get our mongoose model
-var Token = require('./app/models/token'); // get our mongoose model
+var User = require('./app/models/user'); // get our mongoose model User
+var Token = require('./app/models/token'); // get our mongoose model Token
 
 var port = process.env.PORT || 8080; // used to create, sign, and verify tokens
 mongoose.connect(config.database); // connect to database
@@ -33,7 +33,18 @@ app.get('/setup', function(req, res) {
 		if (err) throw err;
 
 		console.log('User saved successfully');
-		res.json({ success: true });
+		// create a sample token black list
+		var token = new Token({
+			value: '123abc',
+			username: 'Nick',
+			banned: true
+		});
+		token.save(function (err) {
+			if (err) throw err;
+
+			console.log('Token saved successfully');
+			res.json({ success: true });
+		});
 	});
 });
 
@@ -97,7 +108,8 @@ apiRoutes.use(function(req, res, next) {
 			} else {
 				// if everything is good, save to request for use in other routes
 				Token.findOne({
-					value: token
+					value: token,
+					banned: true
 				}, function(err, tokenRes) {
 
 					if (err) throw err;

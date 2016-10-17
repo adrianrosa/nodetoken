@@ -7,5 +7,6 @@ var Schema = mongoose.Schema;
 // set up a mongoose model
 module.exports = mongoose.model('Token', new Schema({
     value: String,
-    username: String
+    username: String,
+    banned: Boolean
 }));
